@@ -8,17 +8,23 @@ const PrivateRoutes = () => {
         return (
             <Outlet />
         )
+    } else if (currentUser == "pranginmall@marc.com") {
+        return (
+            <Outlet />
+        )
+    } else if (currentUser == "queensbaymall@marc.com") {
+        return (
+            <Outlet />
+        )
+    } else if (currentUser == "gurneyparagon@marc.com") {
+        return (
+            <Outlet />
+        )
     } else {
         return (
             <Navigate to="/" />
         )
     }
-
-    // let x = {'token': false}
-    // return (
-    //     x.token ? <Outlet/> : <Navigate to="/"/>
-    // )
-
 }
 
 export default PrivateRoutes

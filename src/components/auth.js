@@ -1,15 +1,10 @@
 import { useState } from "react";
-import { auth, googleProvider } from "../config/firebase";
-import { createUserWithEmailAndPassword, signInWithPopup, signOut, signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate, Route, BrowserRouter, Routes } from "react-router-dom";
-import App from "../App";
+import { realtimeDb, auth } from "../config/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { ref, update } from 'firebase/database'
 
-import { Edit } from "../pages/edit";
-import { Add } from "../pages/add";
-import { Register } from "../pages/register";
-import { Dashboard } from "../pages/dashboard";
-import { Parking } from "../pages/parking";
-import { Home } from "../pages/home";
 
 export const Auth = () => {
     const [email, setEmail] = useState("");
@@ -19,80 +14,84 @@ export const Auth = () => {
 
     const navigate = useNavigate();
 
-    // console.log(auth?.currentUser?.email); 
-    //console.log(auth?.currentUser?.photoURL); // to get the photo url of the Google account signed in 
-
-    const signIn = async () => {
-        try {
-            await createUserWithEmailAndPassword(auth, email, password);
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
     const login = async () => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            console.log("Login Successful")
-            console.log(auth?.currentUser?.email);
+            // console.log("Login Successful")
+            // console.log(auth?.currentUser?.email);
             currentUser = auth?.currentUser?.email.toString();
-            console.log(currentUser);
-            console.log(typeof currentUser);
-            // navigate("/home"); 
+            // console.log(currentUser);
+            // console.log(typeof currentUser);
             if (currentUser == "gurneyplaza@marc.com") {
+                sessionStorage.setItem("parkingName", "gurneyPlazaMotorcycle");
                 navigate("/dashboard");
+            } else if (currentUser == "queensbaymall@marc.com") {
+                sessionStorage.setItem("parkingName", "queensbayMallMotorcycle");
+                navigate("/dashboard");
+            } else if (currentUser == "pranginmall@marc.com") {
+                sessionStorage.setItem("parkingName", "pranginMallMotorcycle");
+                navigate("/dashboard");
+            } else if (currentUser == "gurneyparagon@marc.com") {
+                sessionStorage.setItem("parkingName", "gurneyParagonMotorcycle");
+                navigate("/dashboard");
+
+                // update(ref(realtimeDb, 'cameraStatus'), {
+                update(ref(realtimeDb, 'gurneyParagonCamera'), {
+                    // id: 'cameraStatus',
+                    // status: true, 
+                    using: true
+                })
             } else {
                 navigate("/home");
             }
         } catch (err) {
             console.error(err)
+            Swal.fire({
+                width: 300,
+                text: 'Invalid email or password!',
+                position: 'top-end',
+                timer: 3000,
+                showConfirmButton: false,
+            })
         }
     };
-
-    // const signInWithGoogle = async () => {
-    //     try {
-    //         await signInWithPopup(auth, googleProvider);
-    //     } catch (err) {
-    //         console.error(err);
-    //     }
-    // };
-
-    const logout = async () => {
-        try {
-            await signOut(auth);
-            console.log("Logout Successful")
-            console.log(auth?.currentUser?.email);
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    // if (currentUser == "gurneyplaza@marc.com") {
-    //     BrowserRouter = <Routes>
-    //     <Route exact path="/" element={<Auth />} />
-    //     <Route exact path="/register" element={<Register />} />
-    //     <Route exact path="/add" element={<Add />} />
-    //     <Route exact path="/edit" element={<Edit />} />
-    //     <Route exact path="/parking" element={<Parking />} />
-    //     <Route exact path="/dashboard" element={<Dashboard />} />
-    //   </Routes>;
-    // } else {
-    //     BrowserRouter = <Routes>
-    //     <Route exact path="/" element={<Auth />} />
-    //     <Route exact path="/register" element={<Register />} />
-    //     <Route exact path="/home" element={<Home />} />
-    //   </Routes>;
-    // }
 
     return (
-        <div>
-            <input placeholder="Email..." onChange={(e) => setEmail(e.target.value)} />
-            <input placeholder="Password" type="password" onChange={(e) => setPassword(e.target.value)} />
-            <button onClick={signIn}> Register </button>
-            <button onClick={login}> Login </button>
-            {/* <button onClick={signInWithGoogle}> Sign In With Google </button> */}
-            <button onClick={logout}> Logout </button>
-        </div>
+        <div className="container" style={{ height: "80vh" }}>
+            <div className="container" style={{ height: "20vh" }}>
+            </div>
+            <div className="row h-100">
+                <div className="col-md-5 mx-auto d-flex flex-column align-items-center">
+                    <form>
+                        {/* Email input */}
+                        <div class="form-outline mb-4">
+                            <input type="email" id="form2Example1" class="form-control" onChange={(e) => setEmail(e.target.value)} />
+                            <label class="form-label" for="form2Example1">
+                                {email.length === 0 ? "E M A I L" : ""}
+                            </label>
+                        </div>
 
+                        {/* Password input */}
+                        <div class="form-outline mb-4">
+                            <input type="password" id="form2Example2" class="form-control" onChange={(e) => setPassword(e.target.value)} />
+                            <label class="form-label" for="form2Example2">
+                                {password.length === 0 ? "P A S S W O R D" : ""}
+                            </label>
+                        </div>
+
+                        {/* Submit button */}
+                        <button type="button" class="btn btn-primary btn-block mb-4" onClick={login}>L O G I N</button>
+
+                        {/* Register button */}
+                        {/* <div class="text-center">
+                            <p> Don't have an account?  <a href="/register">Register here</a></p>
+                        </div> */}
+                        <div class="text-center">
+                            <p>Motorcycle Autonomous Riding Card </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     );
 };

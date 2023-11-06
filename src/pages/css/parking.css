@@ -1,0 +1,8 @@
+.picture {
+    align-items: center;
+    flex-direction: column; 
+}
+
+img {
+    margin: 10px;
+}
